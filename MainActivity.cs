@@ -30,9 +30,10 @@ namespace FoodApp_Andriod_with_RESTful
             {
                 string searchdata = search_Item_editText.Text;
                 string search_Diet_date = search_ItemDiet_editText.Text;
+                string search_protine = SelectItem_Protien_EditText.Text;
                 if (!string.IsNullOrEmpty(searchdata))
                 {
-                    string apiUrl = $"{ApiUrl}?apiKey={ApiKey}&query={searchdata}&diet={search_Diet_date}&&minProtein7={SelectItem_Protien_EditText}";
+                    string apiUrl = $"{ApiUrl}?apiKey={ApiKey}&query={searchdata}&diet={search_Diet_date}&minProtein={search_protine}";
                     
                     Searched_Items_TextView.Text = await SearchRecipes(apiUrl);
                 }
@@ -59,7 +60,12 @@ namespace FoodApp_Andriod_with_RESTful
                         StringBuilder stringBuilder = new StringBuilder();
                         foreach (var recipe in recipes.results)
                         {
-                            stringBuilder.AppendLine($"Recipe Title: {recipe.title}");
+                            StringBuilder nutriValue = new StringBuilder();
+                            foreach(var nutri in recipe.nutrition.nutrients)
+                            {
+                                nutriValue.AppendLine(nutri.amount.ToString() + nutri.unit);
+                            }
+                            stringBuilder.AppendLine($"Recipe Title: {recipe.title}  - " + nutriValue.ToString());
 
                         }
                         return stringBuilder.ToString();
