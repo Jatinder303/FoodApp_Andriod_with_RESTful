@@ -6,10 +6,11 @@ namespace FoodApp_Andriod_with_RESTful
     [Activity(Label = "@string/app_name", MainLauncher = true)]
     public class MainActivity : Activity
     {
-        private EditText search_Item_editText, search_ItemDiet_editText, SelectItem_Protien_EditText;
+        private EditText search_Item_editText, min_Fat, min_Protein, min_Carb, min_Calories;
         private Button search_Button;
         private TextView Searched_Items_TextView;
-
+        private Spinner dietSpinner, cuisineSpinner;
+        string selectedDiet, selectCuisine;
         private const string ApiKey = "d6838312a8c94c7180e415e47b426054";
         private const string ApiUrl = "https://api.spoonacular.com/recipes/complexSearch";
 
@@ -21,28 +22,41 @@ namespace FoodApp_Andriod_with_RESTful
             SetContentView(Resource.Layout.activity_main);
 
             search_Item_editText = FindViewById<EditText>(Resource.Id.SelectItem_EditText);
-            search_ItemDiet_editText = FindViewById<EditText>(Resource.Id.SelectItem_Diet_EditText);
-            SelectItem_Protien_EditText = FindViewById<EditText>(Resource.Id.SelectItem_Protien_EditText);
+            min_Calories = FindViewById<EditText>(Resource.Id.min_Calories_editText);
+            min_Fat = FindViewById<EditText>(Resource.Id.min_Fat_editText);
+            min_Carb = FindViewById<EditText>(Resource.Id.min_carb_editText);
+            min_Protein = FindViewById<EditText>(Resource.Id.min_Protien_editText);
+            dietSpinner = FindViewById<Spinner>(Resource.Id.dietType_spinner);
+            cuisineSpinner = FindViewById<Spinner>(Resource.Id.cuisineType_spinner);
             search_Button = FindViewById<Button>(Resource.Id.btn_Serach);
             Searched_Items_TextView = FindViewById<TextView>(Resource.Id.SearchedItems_TextView);
 
+
+            dietSpinner.ItemSelected += (sender, e) =>
+            {
+                selectedDiet = dietSpinner.GetItemAtPosition(e.Position).ToString();
+            };
+
+            cuisineSpinner.ItemSelected += (sender, e) =>
+            {
+                selectCuisine = cuisineSpinner.GetItemAtPosition(e.Position).ToString();
+            };
             search_Button.Click += async (sender, e) =>
             {
                 string searchdata = search_Item_editText.Text;
-                string search_Diet_date = search_ItemDiet_editText.Text;
-                string search_protine = SelectItem_Protien_EditText.Text;
-                if (!string.IsNullOrEmpty(searchdata))
+               if (!string.IsNullOrEmpty(searchdata))
                 {
-                    string apiUrl = $"{ApiUrl}?apiKey={ApiKey}&query={searchdata}&diet={search_Diet_date}&minProtein={search_protine}";
+                    string apiUrl = $"{ApiUrl}?apiKey={ApiKey}&query={searchdata}&diet={selectedDiet}&cuisine={selectCuisine}&minProtein={min_Protein.Text}&minCarbs={min_Carb.Text}&minCalories={min_Calories.Text}&minFat={min_Fat.Text}";
                     
                     Searched_Items_TextView.Text = await SearchRecipes(apiUrl);
                 }
                 else
                 {
-                    Searched_Items_TextView.Text = "Please enter Search Items and Diet type";
+                    Searched_Items_TextView.Text = "Please Enter Recipe Name for Ssearch";
                 }
 
             };
+            
         }
 
         private async Task<string> SearchRecipes(string apiUrl)
@@ -63,7 +77,7 @@ namespace FoodApp_Andriod_with_RESTful
                             StringBuilder nutriValue = new StringBuilder();
                             foreach(var nutri in recipe.nutrition.nutrients)
                             {
-                                nutriValue.AppendLine(nutri.amount.ToString() + nutri.unit);
+                                nutriValue.AppendLine(nutri.name + " " + nutri.amount.ToString() + nutri.unit);
                             }
                             stringBuilder.AppendLine($"Recipe Title: {recipe.title}  - " + nutriValue.ToString());
 
