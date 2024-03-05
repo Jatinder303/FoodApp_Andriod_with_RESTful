@@ -1,3 +1,4 @@
+using Android.Widget;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -54,13 +55,27 @@ namespace FoodApp_Andriod_with_RESTful
                 {
                     Searched_Items_TextView.Text = "Please Enter Recipe Name for Ssearch";
                 }
-
             };
-            
+            Searched_Items_TextView.Click += obj_TextView_item_Selected;
         }
 
-        private async Task<string> SearchRecipes(string apiUrl)
+        private void obj_TextView_item_Selected(object? sender, EventArgs e)
         {
+            string SelectedItem_Text = Searched_Items_TextView.Text;
+            int id;
+            if (int.TryParse(SelectedItem_Text, out id))
+            {
+                Toast.MakeText(this, id, ToastLength.Short).Show();
+            }
+            else
+            {
+                // Handle the case where the text is not a valid integer ID
+                Toast.MakeText(this, "Invalid ID format in TextView text", ToastLength.Short).Show();
+            }
+        }
+
+         private async Task<string> SearchRecipes(string apiUrl)
+         {
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage httpResponseMessage = await client.GetAsync(apiUrl);
@@ -77,9 +92,9 @@ namespace FoodApp_Andriod_with_RESTful
                             StringBuilder nutriValue = new StringBuilder();
                             foreach(var nutri in recipe.nutrition.nutrients)
                             {
-                                nutriValue.AppendLine(nutri.name + " " + nutri.amount.ToString() + nutri.unit);
+                                nutriValue.AppendLine(nutri.name + " : " + nutri.amount.ToString() + nutri.unit);
                             }
-                            stringBuilder.AppendLine($"Recipe Title: {recipe.title}  - " + nutriValue.ToString());
+                            stringBuilder.AppendLine($"Recipe Id : {recipe.id} \n Recipe Name : {recipe.title}  \n" + nutriValue.ToString());
 
                         }
                         return stringBuilder.ToString();

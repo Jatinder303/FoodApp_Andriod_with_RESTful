@@ -59,8 +59,8 @@
                     android:entries="@array/cuisine_array" />
              </LinearLayout>
          <TextView
-                    android:text="Please Enter Below Information Related to Minimum Amount per Serving"
-                   android:textSize="20dp"
+                    android:text="Please enter below the information related to the minimum amount per serving."
+                   android:textSize="15dp"
             android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:textColor="@android:color/holo_red_dark"
